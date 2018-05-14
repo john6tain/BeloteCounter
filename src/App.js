@@ -49,7 +49,7 @@ class App extends Component {
       })
     } else if (target.name === "tb") {
       this.setState({
-        score: target.value * 2
+        score: Number(this.state.score + (target.value * 2))
       })
     }
     else {
@@ -59,8 +59,6 @@ class App extends Component {
     }
   }
   addTeamOneScore(event) {
-    //if the users did not seltct Option then give him message
-    //fix or change the login fixing is harder
     if (this.state.selectedOption !== false) {
       let score = Number(this.state.selectedOption) + Number(this.state.score) - Number(this.state.teamOneInput);
       this.setState({
@@ -83,6 +81,7 @@ class App extends Component {
   }
 
   handleClear(event) {
+    //Clear all inputs and set teams Score to 0
     localStorage.clear();
   }
 
