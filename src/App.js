@@ -42,9 +42,9 @@ class App extends Component {
   handleCheckBox(event) {
     const target = event.target;
     const name = target.name;
-    
+
     if (target.checked === true) {
-      let score = this.state.score + Number(name);
+      let score = this.state.anons + Number(name);
       this.setState({
         anons: score
       })
@@ -55,7 +55,7 @@ class App extends Component {
     }
     else {
       this.setState({
-        score: 0
+        anons: this.state.anons - Number(name)
       })
     }
   }
