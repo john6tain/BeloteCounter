@@ -8,6 +8,7 @@ class App extends Component {
     this.state = {
       selectedOption: false,
       score: 0,
+      anons: 0,
       twoHundred: 0,
       teamOneScore: 0,
       teamTwoScore: 0,
@@ -41,15 +42,15 @@ class App extends Component {
   handleCheckBox(event) {
     const target = event.target;
     const name = target.name;
-
+    
     if (target.checked === true) {
       let score = this.state.score + Number(name);
       this.setState({
-        score: score
+        anons: score
       })
     } else if (target.name === "tb") {
       this.setState({
-        score: Number(this.state.score + (target.value * 2))
+        score: Number((target.value * 2))
       })
     }
     else {
@@ -60,7 +61,7 @@ class App extends Component {
   }
   addTeamOneScore(event) {
     if (this.state.selectedOption !== false) {
-      let score = Number(this.state.selectedOption) + Number(this.state.score) - Number(this.state.teamOneInput);
+      let score = Number(this.state.selectedOption) + Number(this.state.anons) + Number(this.state.score) - Number(this.state.teamOneInput);
       this.setState({
         teamOneScore: Number(this.state.teamOneScore) + Number(this.state.teamOneInput),
         teamTwoScore: Number(this.state.teamTwoScore) + Number(score),
@@ -70,7 +71,7 @@ class App extends Component {
   }
   addTeamTwoScore(event) {
     if (this.state.selectedOption !== false) {
-      let score = Number(this.state.selectedOption) + Number(this.state.score) - Number(this.state.teamTwoInput);
+      let score = Number(this.state.selectedOption) + Number(this.state.anons) + Number(this.state.score) - Number(this.state.teamTwoInput);
       this.setState({
         teamOneScore: Number(this.state.teamOneScore) + Number(score),
         teamTwoScore: Number(this.state.teamTwoScore) + Number(this.state.teamTwoInput),
@@ -120,7 +121,8 @@ class App extends Component {
         </div>
         <div>
           <label>terca & belote</label>
-          <input type="number" className="tb" onChange={this.handleCheckBox} name="tb" />
+          <input type="number" className="tb" onChange={this.handleCheckBox} name="tb" min="0" />
+
         </div>
         <div>
           <label>26</label>
