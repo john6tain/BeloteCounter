@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  color:black;
 }
 
 .App-logo {
@@ -33,4 +34,7 @@
 .teamName{
   margin-left: 1.5em;
   padding-right: 1.5em; 
+}
+#info{
+  background: linear-gradient(royalblue,blue)
 }
