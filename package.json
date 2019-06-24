@@ -1,5 +1,5 @@
 {
-  "name": "showdown",
+  "name": "beloteCounter",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -22,7 +22,7 @@
     "react-dropzone": "3.13.3",
     "react-router-dom": "4.1.1",
     "react-spinner": "0.2.7",
-    "serve": "^6.5.6",
+    "serve": "^6.5.8",
     "shortid": "2.2.8",
     "superagent": "3.5.2",
     "toastr": "2.1.2"
@@ -34,7 +34,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "serve -s build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "server": "nodemon server/index.js"
