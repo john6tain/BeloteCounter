@@ -125,10 +125,14 @@ class App extends Component {
 
         </div>
         <div>
-          <label>26</label>
-          <input type="radio" value="26" checked={this.state.selectedOption === '26'}
-            onChange={this.handleInputChange} value="26" />
+          <div class="custom-control custom-radio">
+  <input type="radio" class="custom-control-input" id="26" name="26"value="26" checked={this.state.selectedOption === '26'}
+            onChange={this.handleInputChange} value="26">
+  <label class="custom-control-label" for="26">26</label>
+</div>
+
           <label>16</label>
+
           <input type="radio" value="16" checked={this.state.selectedOption === '16'}
             onChange={this.handleInputChange} value="16" />
           <label>35</label>
