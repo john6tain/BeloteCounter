@@ -13,6 +13,7 @@ class App extends Component {
         this.state = {
             selectedOption: false,
             score: 0,
+            x: 0,
             x2: false,
             x4: false,
             showTable: true,
@@ -61,7 +62,19 @@ class App extends Component {
         this.handleClick = this.handleClick.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleShowHideTable = this.handleShowHideTable.bind(this);
+        this.handleX = this.handleX.bind(this);
+        this.clearX = this.clearX.bind(this);
+
     }
+
+    clearX() {
+        if (!this.state.x2 && !this.state.x4) {
+            this.setState({
+                x: 0
+            });
+        }
+    }
+
     handleInputChange(event) {
         if (event.target.name === "teamOne") {
             this.setState({
@@ -79,27 +92,44 @@ class App extends Component {
         }
 
     }
+    handleX(event) {
+        const target = event.target;
+        const name = target.name;
+        this.setState({
+            x2: !target.checked,
+            x4: !target.checked,
+            [name]: target.checked
+        });
+        if (typeof this.state.selectedOption === 'string') {
+            if (target.checked === true) {
+                this.setState({
+                    x: (this.state.selectedOption * target.value) - this.state.selectedOption
+                });
+            } else {
+                setTimeout(this.clearX, 50);
+            }
+        } else {
+            this.setState({
+                [name]: false
+            });
+        }
+    }
+
     handleCheckBox(event) {
         const target = event.target;
         const name = target.name;
+
         if (target.checked === true) {
-            if (name.indexOf('x') > -1) {
-                this.setState({
-                    [name]: true
-                });
-            } else {
-                let score = this.state.anons + Number(name);
-                this.setState({
-                    anons: score
-                });
-            }
+            let score = this.state.anons + Number(name);
+            this.setState({
+                anons: score
+            });
 
         } else if (target.name === "tb") {
             this.setState({
                 score: Number((target.value * 2))
             });
-        }
-        else {
+        } else {
             this.setState({
                 anons: this.state.anons - Number(name)
             });
@@ -107,8 +137,7 @@ class App extends Component {
     }
     addTeamOneScore(event) {
         if (this.state.selectedOption !== false) {
-            let x = this.state.x2 ? 2 : this.state.x4 ? 4 : 1;
-            let score = ((Number(this.state.selectedOption) + Number(this.state.anons) + Number(this.state.score)) * x) - Number(this.state.teamOneInput);
+            let score = Number(this.state.selectedOption) + Number(this.state.x) + Number(this.state.anons) + Number(this.state.score) - Number(this.state.teamOneInput);
             this.state.rows.push({
                 teamOneScore: Number(this.state.teamOneInput),
                 teamTwoScore: Number(score),
@@ -117,17 +146,16 @@ class App extends Component {
             this.setState({
                 teamOneScore: Number(this.state.teamOneScore) + Number(this.state.teamOneInput),
                 teamTwoScore: Number(this.state.teamTwoScore) + Number(score),
-                score: 0
             });
             localStorage.setItem('TeamOne', Number(this.state.teamOneScore) + Number(this.state.teamOneInput));
             localStorage.setItem('TeamTwo', Number(this.state.teamTwoScore) + Number(score));
+            localStorage.setItem('rows', JSON.stringify(this.state.rows));
         }
     }
 
     addTeamTwoScore(event) {
         if (this.state.selectedOption !== false) {
-            let x = this.state.x2 ? 2 : this.state.x4 ? 4 : 1;
-            let score = ((Number(this.state.selectedOption) + Number(this.state.anons) + Number(this.state.score)) * x) - Number(this.state.teamTwoInput);
+            let score = Number(this.state.selectedOption) + Number(this.state.x) + Number(this.state.anons) + Number(this.state.score) - Number(this.state.teamTwoInput);
             this.state.rows.push({
                 teamOneScore: Number(score),
                 teamTwoScore: Number(this.state.teamTwoInput),
@@ -136,10 +164,10 @@ class App extends Component {
             this.setState({
                 teamOneScore: Number(this.state.teamOneScore) + Number(score),
                 teamTwoScore: Number(this.state.teamTwoScore) + Number(this.state.teamTwoInput),
-                score: 0
             });
             localStorage.setItem('TeamOne', Number(this.state.teamOneScore) + Number(score));
             localStorage.setItem('TeamTwo', Number(this.state.teamTwoScore) + Number(this.state.teamTwoInput));
+            localStorage.setItem('rows', JSON.stringify(this.state.rows));
         }
     }
 
@@ -157,6 +185,7 @@ class App extends Component {
         this.setState({
             teamOneScore: localStorage.getItem('TeamOne') || 0,
             teamTwoScore: localStorage.getItem('TeamTwo') || 0,
+            rows: JSON.parse(localStorage.getItem('rows')) || []
         });
     }
 
@@ -215,12 +244,12 @@ class App extends Component {
                                 labelPlacement="top"
                                 label="200" />
                             <FormControlLabel
-                                control={<Checkbox value={this.state.x2} onChange={this.handleCheckBox} name="x2" />}
+                                control={<Checkbox value={2} checked={this.state.x2} onChange={this.handleX} name="x2" />}
                                 color="primary"
                                 labelPlacement="top"
                                 label="x2" />
                             <FormControlLabel
-                                control={<Checkbox value={this.state.x4} onChange={this.handleCheckBox} name="x4" />}
+                                control={<Checkbox value={4} checked={this.state.x4} onChange={this.handleX} name="x4" />}
                                 color="primary"
                                 labelPlacement="top"
                                 label="x4" />
@@ -256,7 +285,7 @@ class App extends Component {
                     <Fab size="small" color="primary" aria-label="add" className={this.state.classes.add}>
                         <AddIcon onClick={this.addTeamOneScore} />
                     </Fab>
-                    <Badge badgeContent={this.state.teamOneScore} color="primary" anchorOrigin={{
+                    <Badge badgeContent={this.state.teamOneScore} color="primary" max={9999} anchorOrigin={{
                         vertical: 'bottom',
                         horizontal: 'right',
                     }}>
@@ -276,7 +305,7 @@ class App extends Component {
                     <Fab className={this.state.classes.add} size="small" color="secondary" aria-label="add">
                         <AddIcon onClick={this.addTeamTwoScore} />
                     </Fab>
-                    <Badge badgeContent={this.state.teamTwoScore} color="secondary" anchorOrigin={{
+                    <Badge badgeContent={this.state.teamTwoScore} color="secondary" max={9999} anchorOrigin={{
                         vertical: 'bottom',
                         horizontal: 'right',
                     }}>
