@@ -41,11 +41,14 @@
 
 #table{
   margin: auto;
-  width: 20%;
   padding: 10px;
 }
 
 .MuiButtonBase-root{
   margin-right: 1.5rem !important;
   margin-top: 1rem !important;
+}
+.MuiFormControlLabel-labelPlacementTop {
+  margin-left: 16px;
+  flex-direction: row !important;
 }

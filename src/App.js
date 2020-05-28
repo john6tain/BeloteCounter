@@ -197,26 +197,32 @@ class App extends Component {
                             <FormControlLabel
                                 control={<Checkbox value="50" onChange={this.handleCheckBox} name="5" />}
                                 color="primary"
+                                labelPlacement="top"
                                 label="50" />
                             <FormControlLabel
                                 control={<Checkbox value="100" onChange={this.handleCheckBox} name="10" />}
                                 color="primary"
+                                labelPlacement="top"
                                 label="100" />
                             <FormControlLabel
                                 control={<Checkbox value="150" onChange={this.handleCheckBox} name="15" />}
                                 color="primary"
+                                labelPlacement="top"
                                 label="150" />
                             <FormControlLabel
                                 control={<Checkbox value="200" onChange={this.handleCheckBox} name="20" />}
                                 color="primary"
+                                labelPlacement="top"
                                 label="200" />
                             <FormControlLabel
                                 control={<Checkbox value={this.state.x2} onChange={this.handleCheckBox} name="x2" />}
                                 color="primary"
+                                labelPlacement="top"
                                 label="x2" />
                             <FormControlLabel
                                 control={<Checkbox value={this.state.x4} onChange={this.handleCheckBox} name="x4" />}
                                 color="primary"
+                                labelPlacement="top"
                                 label="x4" />
                         </FormGroup>
                     </FormControl>
