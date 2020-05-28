@@ -29,7 +29,7 @@
 }
 .tb{
   margin-left: 0.5em;
-  width: 2.5em;
+  width: 5.5em;
 }
 .teamName{
   margin-left: 1.5em;
@@ -37,4 +37,15 @@
 }
 #info{
   background: linear-gradient(royalblue,blue)
+}
+
+#table{
+  margin: auto;
+  width: 20%;
+  padding: 10px;
+}
+
+.MuiButtonBase-root{
+  margin-right: 1.5rem !important;
+  margin-top: 1rem !important;
 }

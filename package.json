@@ -1,8 +1,11 @@
 {
     "name": "belote-counter",
-    "version": "0.1.0",
+    "version": "0.4.0",
     "private": true,
     "dependencies": {
+        "@material-ui/core": "latest",
+        "@material-ui/icons": "^4.9.1",
+        "@material-ui/styles": "^4.10.0",
         "alt": "0.18.6",
         "body-parser": "1.17.2",
         "bootstrap": "3.3.7",
@@ -17,7 +20,6 @@
         "passport": "0.3.2",
         "passport-local": "1.0.0",
         "pug": "2.0.0-rc.1",
-        "@material-ui/core": "latest",
         "react": "latest",
         "react-dom": "latest",
         "react-dropzone": "latest",
@@ -39,7 +41,6 @@
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
-        "postbuild": "serve -s build",
         "test": "react-scripts test --env=jsdom",
         "eject": "react-scripts eject",
         "server": "nodemon server/index.js"

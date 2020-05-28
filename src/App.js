@@ -1,29 +1,66 @@
 import React, { Component } from 'react';
 import logo from './logo.jpg';
 import './App.css';
-import { Button, TextField, RadioGroup, FormControlLabel, Radio, FormControl, FormGroup, Checkbox } from '@material-ui/core';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import { Badge, TableContainer, TableBody, TableRow, Paper, TableHead, Table, TableCell, Button, Fab, Menu, MenuItem, TextField, RadioGroup, FormControlLabel, Radio, FormControl, FormGroup, Checkbox } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
 
 
 class App extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
             selectedOption: false,
             score: 0,
+            x2: false,
+            x4: false,
+            showTable: true,
             anons: 0,
-            fifty: false,
-            twoHundred: 0,
+            anchorEl: null,
             teamOneScore: 0,
             teamTwoScore: 0,
             teamOneInput: 0,
-            teamTwoInput: 0
+            teamTwoInput: 0,
+            rows: [],
+            StyledTableCell: withStyles((theme) => ({
+                head: {
+                    backgroundColor: theme.palette.common.black,
+                    color: theme.palette.common.white,
+                },
+                body: {
+                    fontSize: 14,
+                },
+            }))(TableCell),
+            StyledTableRow: withStyles((theme) => ({
+                root: {
+                    '&:nth-of-type(odd)': {
+                        backgroundColor: theme.palette.action.hover,
+                    },
+                },
+            }))(TableRow),
+            classes: makeStyles({
+                table: {
+                    minWidth: 100,
+                    maxWidth: 500,
+                },
+                add: {
+                    root: {
+                        minWidth: 1000
+                    }
+                },
+            })
         };
+
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleClear = this.handleClear.bind(this);
         this.handleLoad = this.handleLoad.bind(this);
         this.addTeamOneScore = this.addTeamOneScore.bind(this);
         this.addTeamTwoScore = this.addTeamTwoScore.bind(this);
         this.handleCheckBox = this.handleCheckBox.bind(this);
+        this.handleClick = this.handleClick.bind(this);
+        this.handleClose = this.handleClose.bind(this);
+        this.handleShowHideTable = this.handleShowHideTable.bind(this);
     }
     handleInputChange(event) {
         if (event.target.name === "teamOne") {
@@ -45,60 +82,105 @@ class App extends Component {
     handleCheckBox(event) {
         const target = event.target;
         const name = target.name;
-
         if (target.checked === true) {
-            let score = this.state.anons + Number(name);
-            this.setState({
-                anons: score
-            })
+            if (name.indexOf('x') > -1) {
+                this.setState({
+                    [name]: true
+                });
+            } else {
+                let score = this.state.anons + Number(name);
+                this.setState({
+                    anons: score
+                });
+            }
+
         } else if (target.name === "tb") {
             this.setState({
                 score: Number((target.value * 2))
-            })
+            });
         }
         else {
             this.setState({
                 anons: this.state.anons - Number(name)
-            })
+            });
         }
     }
     addTeamOneScore(event) {
         if (this.state.selectedOption !== false) {
-            let score = Number(this.state.selectedOption) + Number(this.state.anons) + Number(this.state.score) - Number(this.state.teamOneInput);
+            let x = this.state.x2 ? 2 : this.state.x4 ? 4 : 1;
+            let score = ((Number(this.state.selectedOption) + Number(this.state.anons) + Number(this.state.score)) * x) - Number(this.state.teamOneInput);
+            this.state.rows.push({
+                teamOneScore: Number(this.state.teamOneInput),
+                teamTwoScore: Number(score),
+                id: Math.random() + score
+            });
             this.setState({
                 teamOneScore: Number(this.state.teamOneScore) + Number(this.state.teamOneInput),
                 teamTwoScore: Number(this.state.teamTwoScore) + Number(score),
                 score: 0
             });
+            localStorage.setItem('TeamOne', Number(this.state.teamOneScore) + Number(this.state.teamOneInput));
+            localStorage.setItem('TeamTwo', Number(this.state.teamTwoScore) + Number(score));
         }
     }
+
     addTeamTwoScore(event) {
         if (this.state.selectedOption !== false) {
-            let score = Number(this.state.selectedOption) + Number(this.state.anons) + Number(this.state.score) - Number(this.state.teamTwoInput);
+            let x = this.state.x2 ? 2 : this.state.x4 ? 4 : 1;
+            let score = ((Number(this.state.selectedOption) + Number(this.state.anons) + Number(this.state.score)) * x) - Number(this.state.teamTwoInput);
+            this.state.rows.push({
+                teamOneScore: Number(score),
+                teamTwoScore: Number(this.state.teamTwoInput),
+                id: Math.random() + score
+            });
             this.setState({
                 teamOneScore: Number(this.state.teamOneScore) + Number(score),
                 teamTwoScore: Number(this.state.teamTwoScore) + Number(this.state.teamTwoInput),
                 score: 0
             });
-
+            localStorage.setItem('TeamOne', Number(this.state.teamOneScore) + Number(score));
+            localStorage.setItem('TeamTwo', Number(this.state.teamTwoScore) + Number(this.state.teamTwoInput));
         }
     }
 
     handleClear(event) {
         //Clear all inputs and set teams Score to 0
+        this.setState({
+            teamOneScore: 0,
+            teamTwoScore: 0,
+            score: 0
+        });
         localStorage.clear();
     }
 
     handleLoad(event) {
         this.setState({
-            teamOneScore: localStorage.getItem('TeamOne'),
-            teamTwoScore: localStorage.getItem('TeamTwo'),
+            teamOneScore: localStorage.getItem('TeamOne') || 0,
+            teamTwoScore: localStorage.getItem('TeamTwo') || 0,
         });
     }
-    componentDidUpdate(prevProps, prevState) {
-        localStorage.setItem('TeamOne', this.state.teamOneScore);
-        localStorage.setItem('TeamTwo', this.state.teamTwoScore);
-    }
+
+    handleClick(event) {
+        this.setState({
+            anchorEl: event.currentTarget
+        });
+    };
+
+    handleClose() {
+        this.setState({
+            anchorEl: null
+        });
+    };
+
+    handleShowHideTable() {
+        this.setState({
+            showTable: !this.state.showTable
+        });
+    };
+
+
+    // componentDidUpdate(prevProps, prevState) {
+    // }
 
 
     render() {
@@ -128,18 +210,25 @@ class App extends Component {
                                 control={<Checkbox value="200" onChange={this.handleCheckBox} name="20" />}
                                 color="primary"
                                 label="200" />
+                            <FormControlLabel
+                                control={<Checkbox value={this.state.x2} onChange={this.handleCheckBox} name="x2" />}
+                                color="primary"
+                                label="x2" />
+                            <FormControlLabel
+                                control={<Checkbox value={this.state.x4} onChange={this.handleCheckBox} name="x4" />}
+                                color="primary"
+                                label="x4" />
                         </FormGroup>
                     </FormControl>
                 </div>
                 <div>
-                    <FormControl component="fieldset">
-                        {/* <label>terca & belote</label>
-                    <input type="number" className="tb" onChange={this.handleCheckBox} name="tb" min="0" /> */}
-                        <TextField
-                            multiline
-                            variant="outlined"
-                            type="number" className="tb" onChange={this.handleCheckBox} name="tb" min="0" label="terca & belote" />
-                    </FormControl>
+                    <TextField
+                        type="number"
+                        variant="outlined"
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        onChange={this.handleCheckBox} className="tb" name="tb" label="terca & belote" />
                 </div>
                 <div>
                     <FormControl component="fieldset">
@@ -158,24 +247,86 @@ class App extends Component {
                     </FormControl>
                 </div>
                 <div>
-                    <label className="teamName">Team 1:</label>
+                    <Fab size="small" color="primary" aria-label="add" className={this.state.classes.add}>
+                        <AddIcon onClick={this.addTeamOneScore} />
+                    </Fab>
+                    <Badge badgeContent={this.state.teamOneScore} color="primary" anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                    }}>
+                        <TextField
+                            id="standard-multiline-flexible"
+                            label="Team 1"
+                            type="number"
+                            onChange={this.handleInputChange} name="teamOne"
+                        />
+                    </Badge>
+                    {/* <label className="teamName">Team 1:</label>
                     <input type="number" onChange={this.handleInputChange} name="teamOne" />
-                    <label className="teamName">{this.state.teamOneScore}</label>
+                    <label className="teamName">{this.state.teamOneScore}</label> */}
+
                 </div>
                 <div>
-                    <label className="teamName">Team 2:</label>
+                    <Fab className={this.state.classes.add} size="small" color="secondary" aria-label="add">
+                        <AddIcon onClick={this.addTeamTwoScore} />
+                    </Fab>
+                    <Badge badgeContent={this.state.teamTwoScore} color="secondary" anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                    }}>
+                        <TextField
+                            id="standard-multiline-flexible"
+                            label="Team 2"
+                            type="number"
+                            onChange={this.handleInputChange} name="teamTwo"
+                        />
+                    </Badge>
+                    {/* <label className="teamName">Team 2:</label>
                     <input type="number" onChange={this.handleInputChange} name="teamTwo" />
-                    <label className="teamName">{this.state.teamTwoScore}</label>
+                    <label className="teamName">{this.state.teamTwoScore}</label> */}
                 </div>
                 <div>
-                    <input type="submit" value="Add Team One" onClick={this.addTeamOneScore} />
-                    <input type="submit" value="Add Team Two" onClick={this.addTeamTwoScore} />
                 </div>
                 <div>
-                    <input type="submit" value="Load" onClick={this.handleLoad} />
-                    <input type="submit" value="Clear" onClick={this.handleClear} />
+                    <Button aria-controls="simple-menu" aria-haspopup="true" onClick={this.handleClick}>
+                        Show Menu
+                    </Button>
+                    <Menu
+                        id="simple-menu"
+                        anchorEl={this.state.anchorEl}
+                        keepMounted
+                        open={Boolean(this.state.anchorEl)}
+                        onClose={this.handleClose}
+                    >
+                        <MenuItem onClick={this.handleLoad}>Load</MenuItem>
+                        <MenuItem onClick={this.handleClear}>Clear</MenuItem>
+                        <MenuItem onClick={this.handleShowHideTable}>ShowTable</MenuItem>
+                    </Menu>
                 </div>
-                <div id="info">
+                {this.state.showTable ? (
+                    <div id="table">
+                        <TableContainer component={Paper} >
+                            <Table className={this.state.classes.table} aria-label="customized table" size="small">
+                                <TableHead>
+                                    <TableRow>
+                                        <this.state.StyledTableCell>Team 1:</this.state.StyledTableCell>
+                                        <this.state.StyledTableCell>Team 2:</this.state.StyledTableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {this.state.rows.map((row) => (
+                                        <this.state.StyledTableRow key={row.id}>
+                                            <this.state.StyledTableCell>
+                                                {row.teamOneScore}
+                                            </this.state.StyledTableCell>
+                                            <this.state.StyledTableCell key={row.id + 1}>{row.teamTwoScore}</this.state.StyledTableCell>
+                                        </this.state.StyledTableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </div>
+                ) : null}<div id="info">
                     <h2>Първо изберете игра:</h2>
                     <h3>26 е игра на на безкоз или всичко коз</h3>
                     <h3>16 е игра на боя</h3>
@@ -188,7 +339,7 @@ class App extends Component {
                     <h3>ако сте загубили резултата изберете бутона load</h3>
                     <h3>ако искате нова игра първо изберете бутона clear</h3>
                 </div>
-            </div>
+            </div >
 
         );
     }
