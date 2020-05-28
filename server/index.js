@@ -1,7 +1,7 @@
 "use strict";
 
 const express = require('express');
-const port =  process.env.PORT || 3001;
+const port =  process.env.PORT || 3000;
 
 const config = require('./config/config');
 const database = require('./config/database.js');

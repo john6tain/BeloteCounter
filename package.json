@@ -38,9 +38,11 @@
     "devDependencies": {
         "react-scripts": "1.0.10"
     },
+    "proxy": "http://localhost:3000",
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
+        "postbuild": "node server/index.js",
         "test": "react-scripts test --env=jsdom",
         "eject": "react-scripts eject",
         "server": "nodemon server/index.js"

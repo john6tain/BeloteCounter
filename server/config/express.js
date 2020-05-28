@@ -13,7 +13,7 @@ module.exports = (app, config) => {
 
     // Module to Allow Access Control Origin
     app.use(cors());
-
+    app.use(express.static(path.join(__dirname, '../../build')));
     app.use((req, res, next) => {
         if (req.user) {
             res.locals.user = req.user;
