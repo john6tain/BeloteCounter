@@ -4,6 +4,7 @@ import './App.css';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { Badge, TableContainer, TableBody, TableRow, Paper, TableHead, Table, TableCell, Button, Fab, Menu, MenuItem, TextField, RadioGroup, FormControlLabel, Radio, FormControl, FormGroup, Checkbox } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
+import RemoveIcon from '@material-ui/icons/Remove';
 
 
 class App extends Component {
@@ -17,6 +18,7 @@ class App extends Component {
             x2: false,
             x4: false,
             showTable: true,
+            showRemoveControls: false,
             anons: 0,
             anchorEl: null,
             teamOneScore: 0,
@@ -61,7 +63,7 @@ class App extends Component {
         this.handleCheckBox = this.handleCheckBox.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleClose = this.handleClose.bind(this);
-        this.handleShowHideTable = this.handleShowHideTable.bind(this);
+        this.handleShowHideControls = this.handleShowHideControls.bind(this);
         this.handleX = this.handleX.bind(this);
         this.clearX = this.clearX.bind(this);
 
@@ -95,9 +97,10 @@ class App extends Component {
     handleX(event) {
         const target = event.target;
         const name = target.name;
+        // console.log(name);
         this.setState({
-            x2: !target.checked,
-            x4: !target.checked,
+            x2: false,
+            x4: false,
             [name]: target.checked
         });
         if (typeof this.state.selectedOption === 'string') {
@@ -135,6 +138,21 @@ class App extends Component {
             });
         }
     }
+
+    removeScore(name) {
+        this.setState({
+            [`team${name}Score`]: Number(this.state[`team${name}Score`] - this.state[`team${name}Input`]),
+        });
+        this.state.rows.push({
+            [`team${name}Score`]: Number(this.state[`team${name}Input`] * -1),
+            id: Math.random() + this.state[`team${name}Input`]
+        });
+        console.log( Number(this.state[`team${name}Score`] - this.state[`team${name}Input`]));
+        localStorage.setItem('TeamOne',Number(this.state[`team${name}Score`] - this.state[`team${name}Input`]));
+        localStorage.setItem('rows', JSON.stringify(this.state.rows));
+    }
+
+
     addTeamOneScore(event) {
         if (this.state.selectedOption !== false) {
             let score = Number(this.state.selectedOption) + Number(this.state.x) + Number(this.state.anons) + Number(this.state.score) - Number(this.state.teamOneInput);
@@ -150,10 +168,17 @@ class App extends Component {
             localStorage.setItem('TeamOne', Number(this.state.teamOneScore) + Number(this.state.teamOneInput));
             localStorage.setItem('TeamTwo', Number(this.state.teamTwoScore) + Number(score));
             localStorage.setItem('rows', JSON.stringify(this.state.rows));
+            this.setState({
+                selectedOption: false,
+                score: 0,
+                x: 0,
+                x2: false,
+                x4: false,
+            });
         }
     }
 
-    addTeamTwoScore(event) {
+    addTeamTwoScore(event, isPlus) {
         if (this.state.selectedOption !== false) {
             let score = Number(this.state.selectedOption) + Number(this.state.x) + Number(this.state.anons) + Number(this.state.score) - Number(this.state.teamTwoInput);
             this.state.rows.push({
@@ -168,6 +193,13 @@ class App extends Component {
             localStorage.setItem('TeamOne', Number(this.state.teamOneScore) + Number(score));
             localStorage.setItem('TeamTwo', Number(this.state.teamTwoScore) + Number(this.state.teamTwoInput));
             localStorage.setItem('rows', JSON.stringify(this.state.rows));
+            this.setState({
+                selectedOption: false,
+                score: 0,
+                x: 0,
+                x2: false,
+                x4: false,
+            });
         }
     }
 
@@ -201,9 +233,9 @@ class App extends Component {
         });
     };
 
-    handleShowHideTable() {
+    handleShowHideControls(name) {
         this.setState({
-            showTable: !this.state.showTable
+            [name]: !this.state[name]
         });
     };
 
@@ -285,6 +317,9 @@ class App extends Component {
                     <Fab size="small" color="primary" aria-label="add" className={this.state.classes.add}>
                         <AddIcon onClick={this.addTeamOneScore} />
                     </Fab>
+                    {this.state.showRemoveControls ?<Fab size="small" color="primary" aria-label="remove" className={this.state.classes.remove}>
+                        <RemoveIcon onClick={() => this.removeScore('One')} />
+                    </Fab>:null}
                     <Badge badgeContent={this.state.teamOneScore} color="primary" max={9999} anchorOrigin={{
                         vertical: 'bottom',
                         horizontal: 'right',
@@ -305,6 +340,9 @@ class App extends Component {
                     <Fab className={this.state.classes.add} size="small" color="secondary" aria-label="add">
                         <AddIcon onClick={this.addTeamTwoScore} />
                     </Fab>
+                    {this.state.showRemoveControls ?<Fab size="small" color="primary" aria-label="remove" className={this.state.classes.remove}>
+                        <RemoveIcon onClick={() => this.removeScore('Two')} />
+                    </Fab>:null}
                     <Badge badgeContent={this.state.teamTwoScore} color="secondary" max={9999} anchorOrigin={{
                         vertical: 'bottom',
                         horizontal: 'right',
@@ -335,7 +373,8 @@ class App extends Component {
                     >
                         <MenuItem onClick={this.handleLoad}>Load</MenuItem>
                         <MenuItem onClick={this.handleClear}>Clear</MenuItem>
-                        <MenuItem onClick={this.handleShowHideTable}>ShowTable</MenuItem>
+                        <MenuItem onClick={()=>this.handleShowHideControls('showTable')}>ShowTable</MenuItem>
+                        <MenuItem onClick={()=>this.handleShowHideControls('showRemoveControls')}>Show Remove Controls</MenuItem>
                     </Menu>
                 </div>
                 {this.state.showTable ? (
